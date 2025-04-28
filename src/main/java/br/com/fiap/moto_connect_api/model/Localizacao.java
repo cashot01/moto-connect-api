@@ -14,16 +14,19 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "tb_localizacao")
 public class Localizacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moto_id", nullable = false)
     private Moto moto;
 
-    @ManyToOne
-    private LeitorRFID leitor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leitor_id", nullable = false)
+    private LeitorRfid leitor;
 
     private LocalDateTime dataHora;
 }

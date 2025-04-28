@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeitorRFID {
+public class LeitorRfid {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
