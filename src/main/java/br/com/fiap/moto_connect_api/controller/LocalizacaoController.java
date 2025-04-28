@@ -25,6 +25,6 @@ public class LocalizacaoController {
 
     @GetMapping("/moto/{motoId}")
     public List<Localizacao> getHistoricoPorMoto(@PathVariable Long motoId) {
-        return LocalizacaoRepository.findByMotoIdOrderByDataHoraDesc(motoId);
+        return localizacaoRepository.findByMotoIdOrderByDataHoraDesc(motoId);
     }
 }
