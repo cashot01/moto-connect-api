@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MotoController {
 
     @Autowired
-    private MotoRespository repository;
+    private MotoRepository repository;
 
     @GetMapping
     @Cacheable("motos")
@@ -47,7 +47,7 @@ public class MotoController {
             @ApiResponse(responseCode = "400", description = "Falha na validação")
     })
     public Moto create(@RequestBody @Valid Moto moto) {
-        log.info("Cadastrando moto " + moto.getName());
+        log.info("Cadastrando moto " + moto.getModelo());
         return repository.save(moto);
     }
 

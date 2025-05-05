@@ -19,6 +19,6 @@ public class LeitorRfid {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;       // Ex: "Portão 1", "Área A"
+    private String nomeArea;       // Ex: "Portão 1", "Área A"
     private String coordenadas; // Ex: "-23.5505, -46.6333"
 }

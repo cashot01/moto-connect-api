@@ -23,12 +23,13 @@ public class Moto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "tagRfid obrigatória")
     private String tagRfid;
 
-    @NotBlank(message = "campo obrigatorio")
+    @NotBlank(message = "modelo da moto obrigatório")
     private String modelo;
 
-    @NotBlank(message = "campo obrigatorio")
+    @NotBlank(message = "placa obrigatória")
     @Pattern(regexp = "^([A-Z]{3}[0-9][A-Z][0-9]{2}|[A-Z]{3}[0-9]{4})$")
     private String placa;
 
