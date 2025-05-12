@@ -28,7 +28,7 @@ public class Moto {
     //private String tagRfid;
 
     @NotBlank(message = "modelo da moto obrigatório")
-    private String modelo;
+    private TipoModelo modelo;
 
     @NotBlank(message = "placa obrigatória")
     @Pattern(regexp = "^([A-Z]{3}[0-9][A-Z][0-9]{2}|[A-Z]{3}[0-9]{4})$")
