@@ -14,7 +14,7 @@ public class LocalizacaoController {
     @Autowired
     private RfidService rfidService;
 
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity<Localizacao> registrarLeitura(
             @RequestParam String tagRfid,
             @RequestParam Long leitorId
@@ -27,4 +27,6 @@ public class LocalizacaoController {
     public List<Localizacao> getHistoricoPorMoto(@PathVariable Long motoId) {
         return localizacaoRepository.findByMotoIdOrderByDataHoraDesc(motoId);
     }
+
+     */
 }

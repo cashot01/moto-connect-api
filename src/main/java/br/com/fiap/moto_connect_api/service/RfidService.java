@@ -17,7 +17,7 @@ public class RfidService {
     @Autowired
     private LocalizacaoRepository localizacaoRepository;
 
-    public Localizacao registrarLeitura(String tagRfid, Long leitorId) {
+    /*public Localizacao registrarLeitura(String tagRfid, Long leitorId) {
         Moto moto = motoRepository.findByTagRfid(tagRfid)
                 .orElseThrow(() -> new RuntimeException("Moto não encontrada"));
 
@@ -28,4 +28,6 @@ public class RfidService {
 
         return localizacaoRepository.save(novaLocalizacao);
     }
+
+     */
 }
