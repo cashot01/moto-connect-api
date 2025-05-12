@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class Moto {
 
     @NotBlank(message = "Data obrigatoria")
     private LocalDateTime dataCadastro;
+
 
     private TipoStatus status; // em manutenção ou pronta
 
