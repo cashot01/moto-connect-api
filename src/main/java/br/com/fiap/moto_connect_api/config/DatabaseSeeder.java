@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static br.com.fiap.moto_connect_api.model.TipoStatus.MANUTENCAO;
+import static br.com.fiap.moto_connect_api.model.TipoStatus.REVISADA;
 
 @Component
 public class DatabaseSeeder {
@@ -44,7 +45,7 @@ public class DatabaseSeeder {
         var motos = List.of(
                 Moto.builder().modelo(TipoModelo.SPORT).placa("AAA1234").dataCadastro(LocalDate.parse("2025-01-20")).status(MANUTENCAO).build(),
                 Moto.builder().modelo(TipoModelo.POP).placa("BBB1234").dataCadastro(LocalDate.parse("2025-02-22")).status(MANUTENCAO).build(),
-                Moto.builder().modelo(TipoModelo.E).placa("CCC1234").dataCadastro(LocalDate.parse("2025-03-30")).status(MANUTENCAO).build()
+                Moto.builder().modelo(TipoModelo.E).placa("CCC1234").dataCadastro(LocalDate.parse("2025-03-30")).status(REVISADA).build()
         );
 
         motoRepository.saveAll(motos);
