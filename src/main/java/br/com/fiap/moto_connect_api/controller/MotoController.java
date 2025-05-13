@@ -58,6 +58,7 @@ public class MotoController {
     }
 
     @DeleteMapping("{id}")
+    @CacheEvict(value = "motos", allEntries = true)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void destroy(@PathVariable Long id) {
         log.info("Apagando moto " + id);
@@ -65,6 +66,7 @@ public class MotoController {
     }
 
     @PutMapping("{id}")
+    @CacheEvict(value = "motos", allEntries = true)
     public Moto update(@PathVariable Long id, @RequestBody @Valid Moto moto) {
         log.info("Atualizando moto " + id + " " + moto);
 
