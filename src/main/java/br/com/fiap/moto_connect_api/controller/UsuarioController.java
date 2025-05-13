@@ -47,7 +47,7 @@ public class UsuarioController {
     @GetMapping("{id}")
     public Usuario get(@PathVariable Long id) {
         log.info("Buscando usuario " + id);
-        return get(id);
+        return getUsuario(id);
     }
 
     @DeleteMapping("{id}")
