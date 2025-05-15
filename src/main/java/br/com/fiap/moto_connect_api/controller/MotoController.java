@@ -5,6 +5,7 @@ import java.util.List;
 import br.com.fiap.moto_connect_api.model.HistoricoMoto;
 import br.com.fiap.moto_connect_api.model.Rfid;
 import br.com.fiap.moto_connect_api.repository.HistoricoMotoRepository;
+import br.com.fiap.moto_connect_api.repository.RfidRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,13 +28,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
-@RestController
+/*@RestController
 @RequestMapping("/motos")
 @Slf4j
 public class MotoController {
 
     @Autowired
     private MotoRepository repository;
+
+    @Autowired
+    private RfidRepository rfidRepository;
 
     @Autowired
     private HistoricoMotoRepository repositoryHistorico;
@@ -185,4 +189,149 @@ public class MotoController {
                                 HttpStatus.NOT_FOUND,
                                 "Moto não encontrada"));
     }
+} */
+@RestController
+@RequestMapping("/motos")
+@Slf4j
+public class MotoController {
+
+    @Autowired
+    private MotoRepository motoRepository;
+
+    @Autowired
+    private RfidRepository rfidRepository;
+
+    @Autowired
+    private HistoricoMotoRepository historicoRepository;
+
+    @GetMapping
+    @Cacheable("motos")
+    @Operation(description = "Listar todas as motos", tags = "motos", summary = "Lista das Motos")
+    public List<Moto> index() {
+        log.info("Buscando todas as MOTOS");
+        return motoRepository.findAll();
+    }
+
+    @PostMapping
+    @CacheEvict(value = "motos", allEntries = true)
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(responses = {
+            @ApiResponse(responseCode = "400", description = "Falha na validação")
+    })
+    public Moto create(@RequestBody @Valid Moto moto) {
+        log.info("Cadastrando moto {}", moto.getModelo());
+        return motoRepository.save(moto);
+    }
+
+    @GetMapping("{id}")
+    public Moto get(@PathVariable Long id) {
+        log.info("Buscando moto {}", id);
+        return getMoto(id);
+    }
+
+    @DeleteMapping("{id}")
+    @CacheEvict(value = "motos", allEntries = true)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void destroy(@PathVariable Long id) {
+        log.info("Apagando moto {}", id);
+        motoRepository.delete(getMoto(id));
+    }
+
+    @PutMapping("{id}")
+    @CacheEvict(value = "motos", allEntries = true)
+    public Moto update(@PathVariable Long id, @RequestBody @Valid Moto moto) {
+        log.info("Atualizando moto {} {}", id, moto);
+        getMoto(id); // valida existência
+        moto.setId(id);
+        return motoRepository.save(moto);
+    }
+
+    // ====== RFID ======
+
+    @GetMapping("{id}/rfid")
+    @Operation(summary = "Obter RFID associado a uma moto")
+    public Rfid getRfidMoto(@PathVariable Long id) {
+        Moto moto = getMoto(id);
+        if (moto.getRfid() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum RFID associado a esta moto");
+        }
+        return moto.getRfid();
+    }
+
+    @PostMapping("{id}/rfid")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Adicionar/Atualizar RFID para uma moto")
+    public Moto adicionarRfid(@PathVariable Long id, @RequestBody @Valid Rfid rfid) {
+        Moto moto = getMoto(id);
+
+        if (moto.getRfid() != null) {
+            Rfid antigo = moto.getRfid();
+            antigo.setMoto(null);
+            rfidRepository.save(antigo);
+        }
+
+        rfid.setMoto(moto);
+        moto.setRfid(rfid);
+        return motoRepository.save(moto);
+    }
+
+    @DeleteMapping("{id}/rfid")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Remover RFID de uma moto")
+    public void removerRfid(@PathVariable Long id) {
+        Moto moto = getMoto(id);
+        Rfid rfid = moto.getRfid();
+
+        if (rfid == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum RFID associado a esta moto");
+        }
+
+        moto.setRfid(null);
+        rfid.setMoto(null);
+        motoRepository.save(moto);
+        rfidRepository.delete(rfid);
+    }
+
+    // ====== HISTÓRICO ======
+
+    @GetMapping("{id}/historicos")
+    @Operation(summary = "Listar histórico de uma moto")
+    public List<HistoricoMoto> listarHistoricos(@PathVariable Long id) {
+        return getMoto(id).getHistoricos();
+    }
+
+    @PostMapping("{id}/historicos")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Adicionar item ao histórico da moto")
+    public HistoricoMoto adicionarHistorico(
+            @PathVariable Long id,
+            @RequestBody @Valid HistoricoMoto historico) {
+
+        Moto moto = getMoto(id);
+        historico.setMoto(moto);
+        return historicoRepository.save(historico);
+    }
+
+    @DeleteMapping("{id}/historicos/{historicoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Remover item do histórico da moto")
+    public void removerHistorico(@PathVariable Long id, @PathVariable Long historicoId) {
+        Moto moto = getMoto(id);
+        HistoricoMoto historico = historicoRepository.findById(historicoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Item de histórico não encontrado"));
+
+        if (!historico.getMoto().getId().equals(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este histórico não pertence à moto especificada");
+        }
+
+        historicoRepository.delete(historico);
+    }
+
+    // ====== MÉTODO AUXILIAR ======
+    private Moto getMoto(Long id) {
+        return motoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Moto não encontrada"));
+    }
 }
+
