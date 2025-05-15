@@ -1,5 +1,6 @@
 package br.com.fiap.moto_connect_api.model;
 
+import br.com.fiap.moto_connect_api.repository.HistoricoMotoRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -23,11 +24,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_moto")
-public class Moto {
+public class Moto  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected Long id;
 
     //@NotBlank(message = "tagRfid obrigatória")
     //private String tagRfid;
@@ -45,9 +46,13 @@ public class Moto {
     private LocalDate dataCadastro;
 
     @NotNull(message = "status obrigatorio")
-    private TipoStatus status; // em manutenção ou pronta
+    private TipoStatus status;
 
-    /*@OneToMany(mappedBy = "moto", cascade = CascadeType.ALL)
-    private List<Localizacao> localizacoes = new ArrayList<>();
-    */
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tb_rfid", referencedColumnName = "id")
+    private Rfid rfid;
+
+    @OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HistoricoMoto> historicos = new ArrayList<>();
+
 }

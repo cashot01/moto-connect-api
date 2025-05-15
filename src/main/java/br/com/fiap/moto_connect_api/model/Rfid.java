@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_rfid")
-public class Rfid {
+public class Rfid  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

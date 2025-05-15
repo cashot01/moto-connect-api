@@ -2,6 +2,9 @@ package br.com.fiap.moto_connect_api.controller;
 
 import java.util.List;
 
+import br.com.fiap.moto_connect_api.model.HistoricoMoto;
+import br.com.fiap.moto_connect_api.model.Rfid;
+import br.com.fiap.moto_connect_api.repository.HistoricoMotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,6 +34,9 @@ public class MotoController {
 
     @Autowired
     private MotoRepository repository;
+
+    @Autowired
+    private HistoricoMotoRepository repositoryHistorico;
 
     @GetMapping
     @Cacheable("motos")
@@ -73,6 +79,103 @@ public class MotoController {
         getMoto(id);
         moto.setId(id);
         return repository.save(moto);
+    }
+
+    // ====== NOVOS ENDPOINTS PARA RFID ======
+    @GetMapping("{id}/rfid")
+    @Operation(summary = "Obter RFID associado a uma moto")
+    public Rfid getRfidMoto(@PathVariable Long id) {
+        Moto moto = getMoto(id);
+        if (moto.getRfid() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Nenhum RFID associado a esta moto");
+        }
+        return moto.getRfid();
+    }
+
+    @PostMapping("{id}/rfid")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Adicionar/Atualizar RFID para uma moto")
+    public Moto adicionarRfid(@PathVariable Long id, @RequestBody @Valid Rfid rfid) {
+        Moto moto = getMoto(id);
+
+        // Se já existir um RFID, remove a associação anterior
+        if (moto.getRfid() != null) {
+            Rfid rfidExistente = moto.getRfid();
+            rfidExistente.setMoto(null);
+            rfidRepository.save(rfidExistente);
+        }
+
+        rfid.setMoto(moto);
+        moto.setRfid(rfid);
+        return repository.save(moto);
+    }
+
+    @DeleteMapping("{id}/rfid")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Remover RFID de uma moto")
+    public void removerRfid(@PathVariable Long id) {
+        Moto moto = getMoto(id);
+        if (moto.getRfid() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Nenhum RFID associado a esta moto");
+        }
+
+        Rfid rfid = moto.getRfid();
+        moto.setRfid(null);
+        rfid.setMoto(null);
+        repository.save(moto);
+        rfidRepository.delete(rfid);
+    }
+
+    // ====== NOVOS ENDPOINTS PARA HISTÓRICO ======
+    @GetMapping("{id}/historicos")
+    @Operation(summary = "Listar histórico de uma moto")
+    public List<HistoricoMoto> listarHistoricos(@PathVariable Long id) {
+        Moto moto = getMoto(id);
+        return moto.getHistoricos();
+    }
+
+    @PostMapping("{id}/historicos")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Adicionar item ao histórico da moto")
+    public HistoricoMoto adicionarHistorico(
+            @PathVariable Long id,
+            @RequestBody @Valid HistoricoMoto historico) {
+
+        Moto moto = getMoto(id);
+        historico.setMoto(moto);
+        HistoricoMoto savedHistorico = historicoRepository.save(historico);
+        moto.getHistoricos().add(savedHistorico);
+        repository.save(moto);
+
+        return savedHistorico;
+    }
+
+    @DeleteMapping("{id}/historicos/{historicoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Remover item do histórico da moto")
+    public void removerHistorico(
+            @PathVariable Long id,
+            @PathVariable Long historicoId) {
+
+        Moto moto = getMoto(id);
+        HistoricoMoto historico = historicoRepository.findById(historicoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Item de histórico não encontrado"));
+
+        if (!historico.getMoto().getId().equals(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Este histórico não pertence à moto especificada");
+        }
+
+        moto.getHistoricos().remove(historico);
+        historicoRepository.delete(historico);
+        repository.save(moto);
     }
 
     private Moto getMoto(Long id) {

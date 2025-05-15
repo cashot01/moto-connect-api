@@ -1,6 +1,7 @@
 package br.com.fiap.moto_connect_api.config;
 
 import br.com.fiap.moto_connect_api.model.Moto;
+import br.com.fiap.moto_connect_api.model.Rfid;
 import br.com.fiap.moto_connect_api.model.TipoModelo;
 import br.com.fiap.moto_connect_api.model.Usuario;
 import br.com.fiap.moto_connect_api.repository.MotoRepository;

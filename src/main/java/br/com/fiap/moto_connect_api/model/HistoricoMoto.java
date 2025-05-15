@@ -13,7 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_historico_moto")
-public class HistoricoMoto {
+public class HistoricoMoto extends Moto{
+
+    @Override
+    public String getPlaca() {
+        return super.getPlaca();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +29,8 @@ public class HistoricoMoto {
 
     @NotBlank(message = "descrição obrigatoria")
     private String descricao;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moto_id")
+    private Moto moto;
 }
