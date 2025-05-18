@@ -246,7 +246,7 @@ public class MotoController {
         return motoRepository.save(moto);
     }
 
-    // ====== RFID ======
+    /* ====== RFID ======
 
     @GetMapping("{id}/rfid")
     @Operation(summary = "Obter RFID associado a uma moto")
@@ -282,7 +282,7 @@ public class MotoController {
         Moto moto = getMoto(id);
         Rfid rfid = moto.getRfid();
 
-        if (rfid == null) {
+        /*if (rfid == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum RFID associado a esta moto");
         }
 
@@ -317,16 +317,16 @@ public class MotoController {
     @Operation(summary = "Remover item do histórico da moto")
     public void removerHistorico(@PathVariable Long id, @PathVariable Long historicoId) {
         Moto moto = getMoto(id);
-        HistoricoMoto historico = historicoRepository.findById(historicoId)
+        Moto historico = historicoRepository.findById(historicoId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Item de histórico não encontrado"));
 
-        if (!historico.getMoto().getId().equals(id)) {
+        /*if (!historico.getMoto().getId().equals(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este histórico não pertence à moto especificada");
         }
 
         historicoRepository.delete(historico);
-    }
+    } */
 
     // ====== MÉTODO AUXILIAR ======
     private Moto getMoto(Long id) {

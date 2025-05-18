@@ -52,7 +52,13 @@ public class Moto  {
     @JoinColumn(name = "tb_rfid", referencedColumnName = "id")
     private Rfid rfid;
 
-    @OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tb_historico_moto", referencedColumnName = "id")
+    private HistoricoMoto historicoMoto;
+
+   /* @OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HistoricoMoto> historicos = new ArrayList<>();
+    */
+
 
 }

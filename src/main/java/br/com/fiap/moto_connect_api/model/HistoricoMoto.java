@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_historico_moto")
-public class HistoricoMoto {
+public class HistoricoMoto  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +26,8 @@ public class HistoricoMoto {
     @NotBlank(message = "Descrição obrigatória")
     private String descricao;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "moto_id", nullable = false)
-    @JsonBackReference
-    private Moto moto;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "moto_id", nullable = false)
+    //@JsonBackReference
+    //private Moto moto;
 }

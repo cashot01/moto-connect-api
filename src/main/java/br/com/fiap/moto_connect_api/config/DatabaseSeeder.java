@@ -1,10 +1,9 @@
 package br.com.fiap.moto_connect_api.config;
 
-import br.com.fiap.moto_connect_api.model.Moto;
-import br.com.fiap.moto_connect_api.model.Rfid;
-import br.com.fiap.moto_connect_api.model.TipoModelo;
-import br.com.fiap.moto_connect_api.model.Usuario;
+import br.com.fiap.moto_connect_api.model.*;
+import br.com.fiap.moto_connect_api.repository.HistoricoMotoRepository;
 import br.com.fiap.moto_connect_api.repository.MotoRepository;
+import br.com.fiap.moto_connect_api.repository.RfidRepository;
 import br.com.fiap.moto_connect_api.repository.UsuarioRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,12 @@ public class DatabaseSeeder {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private RfidRepository rfidRepository;
+
+    @Autowired
+    private HistoricoMotoRepository historicoMotoRepository;
 
    /* @PostConstruct
     public void motoSeed() {
@@ -50,6 +55,22 @@ public class DatabaseSeeder {
         );
 
         motoRepository.saveAll(motos);
+
+        var rfid = List.of(
+                Rfid.builder().latidude("12345").longitude("54321").nomeArea("Area dos Freios").build(),
+                Rfid.builder().latidude("56789").longitude("98765").nomeArea("Area Balanceamento Pneus").build(),
+                Rfid.builder().latidude("02468").longitude("86420").nomeArea("Area Eletrica").build()
+        );
+
+        rfidRepository.saveAll(rfid);
+
+        var historicos = List.of(
+                HistoricoMoto.builder().parte("Freios").descricao("Troca da pastilha freio").build(),
+                HistoricoMoto.builder().parte("Pneus").descricao("Alinhamento dos Pneus").build(),
+                HistoricoMoto.builder().parte("Bateria").descricao("Troca da bateria").build()
+        );
+
+        historicoMotoRepository.saveAll(historicos);
     }
 
 }
