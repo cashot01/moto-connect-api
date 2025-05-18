@@ -56,9 +56,9 @@ public class Moto  {
     @JoinColumn(name = "tb_historico_moto", referencedColumnName = "id")
     private HistoricoMoto historicoMoto;
 
-   /* @OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HistoricoMoto> historicos = new ArrayList<>();
-    */
+   /*@OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HistoricoMoto> historicos = new ArrayList<>();*/
+
 
 
 }
