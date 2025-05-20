@@ -51,6 +51,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("{id}")
+    @CacheEvict(value = "usuarios", allEntries = true)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void destroy(@PathVariable Long id) {
         log.info("Deletando usuario " + id);
@@ -58,6 +59,7 @@ public class UsuarioController {
     }
 
     @PutMapping("{id}")
+    @CacheEvict(value = "usuarios", allEntries = true)
     public Usuario update(@PathVariable Long id, @RequestBody @Valid Usuario usuario) {
         log.info("Atualizando usuario " + id + " " + usuario);
 
