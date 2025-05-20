@@ -32,7 +32,11 @@ public class DatabaseSeeder {
     @PostConstruct
     public void init() {
         var usuarios = List.of(
-                Usuario.builder().nome("Cauan").email("cauan@mottu.com").senha("senha1234").build());
+                Usuario.builder().nome("Cauan").email("cauan@mottu.com").senha("senha1234").build(),
+                Usuario.builder().nome("Mateus").email("mateus@mottu.com").senha("passworld5678").build(),
+                Usuario.builder().nome("Lucas").email("lucas@mottu.com").senha("098765senha").build()
+
+        );
 
 
         usuarioRepository.saveAll(usuarios);
