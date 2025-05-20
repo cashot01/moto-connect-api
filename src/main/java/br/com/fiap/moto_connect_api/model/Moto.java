@@ -2,6 +2,8 @@ package br.com.fiap.moto_connect_api.model;
 
 import br.com.fiap.moto_connect_api.repository.HistoricoMotoRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -53,8 +55,14 @@ public class Moto  {
     private Rfid rfid;
 
     //@OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tb_historico_moto", referencedColumnName = "id")
+    /*@JoinColumn(name = "tb_historico_moto", referencedColumnName = "id")
     private HistoricoMoto historicoMoto;
+
+     */
+
+    @OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<HistoricoMoto> historicos = new ArrayList<>();
 
    /*@OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HistoricoMoto> historicos = new ArrayList<>();*/

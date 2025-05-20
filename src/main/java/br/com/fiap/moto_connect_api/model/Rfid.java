@@ -1,5 +1,6 @@
 package br.com.fiap.moto_connect_api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -19,15 +20,18 @@ public class Rfid  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "nome Area requirida")
+    @NotBlank(message = "nome da área requerida")
     private String nomeArea;
 
     @NotBlank(message = "latitude requerida")
-    private String latidude;
+    private String latitude;
 
-    @NotBlank(message = "longitude requirida")
+    @NotBlank(message = "longitude requerida")
     private String longitude;
 
 
-
+     @OneToOne(mappedBy = "rfid")
+     @JsonBackReference
+     private Moto moto;
 }
+

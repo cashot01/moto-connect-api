@@ -33,5 +33,6 @@ public class HistoricoMoto  {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "moto_id", nullable = false)
+    @JsonBackReference
     private Moto moto;
 }

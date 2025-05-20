@@ -28,7 +28,7 @@ public class HistoricoMotoController {
     @Cacheable("historicos")
     @Operation(description = "Listar todos os histricos", tags = "historicos", summary = "Lista dos historicos")
     public List<HistoricoMoto> index() {
-        log.info("Buscando todas as MOTOS");
+        log.info("Buscando todos os HISTORICOS");
         return historicoMotoRepository.findAll();
     }
 
@@ -46,7 +46,7 @@ public class HistoricoMotoController {
     @GetMapping("{id}")
     public HistoricoMoto get(@PathVariable Long id) {
         log.info("Buscando historico {}", id);
-        return get(id);
+        return getHistorico(id);
     }
 
     @DeleteMapping("{id}")

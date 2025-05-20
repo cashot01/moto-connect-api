@@ -29,17 +29,6 @@ public class DatabaseSeeder {
     @Autowired
     private HistoricoMotoRepository historicoMotoRepository;
 
-   /* @PostConstruct
-    public void motoSeed() {
-        motoRepository.saveAll(
-                List.of(
-                        Moto.builder().modelo(TipoModelo.SPORT).placa("aaa1234").dataCadastro("2025-05-12").build(),
-                        Moto.builder().modelo(TipoModelo.E).placa("bbb1234").dataCadastro("2025-05-12").build(),
-                        Moto.builder().modelo(TipoModelo.POP).placa("ccc1234").dataCadastro("2025-05-12").build()));
-    }
-
-    */
-
     @PostConstruct
     public void init() {
         var usuarios = List.of(
@@ -57,17 +46,25 @@ public class DatabaseSeeder {
         motoRepository.saveAll(motos);
 
         var rfid = List.of(
-                Rfid.builder().latidude("12345").longitude("54321").nomeArea("Area dos Freios").build(),
-                Rfid.builder().latidude("56789").longitude("98765").nomeArea("Area Balanceamento Pneus").build(),
-                Rfid.builder().latidude("02468").longitude("86420").nomeArea("Area Eletrica").build()
+                Rfid.builder().latitude("12345").longitude("54321").nomeArea("Area dos Freios").build(),
+                Rfid.builder().latitude("56789").longitude("98765").nomeArea("Area Balanceamento Pneus").build(),
+                Rfid.builder().latitude("02468").longitude("86420").nomeArea("Area Eletrica").build()
         );
 
         rfidRepository.saveAll(rfid);
 
+        // Agora associe nas motos
+        motos.get(0).setRfid(rfid.get(0));
+        motos.get(1).setRfid(rfid.get(1));
+        motos.get(2).setRfid(rfid.get(2));
+
+        // E salve novamente as motos já com os Rfids associados
+        motoRepository.saveAll(motos);
+
         var historicos = List.of(
-                HistoricoMoto.builder().parte("Freios").descricao("Troca da pastilha freio").build(),
-                HistoricoMoto.builder().parte("Pneus").descricao("Alinhamento dos Pneus").build(),
-                HistoricoMoto.builder().parte("Bateria").descricao("Troca da bateria").build()
+                HistoricoMoto.builder().parte("Freios").descricao("Troca da pastilha freio").moto(motos.get(0)).build(),
+                HistoricoMoto.builder().parte("Pneus").descricao("Alinhamento dos Pneus").moto(motos.get(1)).build(),
+                HistoricoMoto.builder().parte("Bateria").descricao("Troca da bateria").moto(motos.get(2)).build()
         );
 
         historicoMotoRepository.saveAll(historicos);
