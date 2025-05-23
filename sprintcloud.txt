@@ -1,0 +1,210 @@
+1.
+az group create --name mottu-rfid-rg --location eastus
+
+# Criar rede virtual e sub-rede
+az network vnet create \
+  --resource-group mottu-rfid-rg \
+  --name mottu-vnet \
+  --address-prefix 10.0.0.0/16 \
+  --subnet-name mottu-subnet \
+  --subnet-prefix 10.0.1.0/24
+
+# Criar NSG
+az network nsg create \
+  --resource-group mottu-rfid-rg \
+  --name mottu-nsg
+
+# Configurar regras de segurança
+az network nsg rule create \
+  --resource-group mottu-rfid-rg \
+  --nsg-name mottu-nsg \
+  --name AllowSSH \
+  --protocol tcp \
+  --priority 1000 \
+  --destination-port-range 22 \
+  --access allow
+
+az network nsg rule create \
+  --resource-group mottu-rfid-rg \
+  --nsg-name mottu-nsg \
+  --name AllowSpringBoot \
+  --protocol tcp \
+  --priority 1003 \
+  --destination-port-range 8080 \
+  --access allow
+
+# Criar IP público
+az network public-ip create \
+  --resource-group mottu-rfid-rg \
+  --name mottu-ip \
+  --allocation-method Static \
+  --sku Standard
+
+# Criar interface de rede
+az network nic create \
+  --resource-group mottu-rfid-rg \
+  --name mottu-nic \
+  --vnet-name mottu-vnet \
+  --subnet mottu-subnet \
+  --network-security-group mottu-nsg \
+  --public-ip-address mottu-ip
+
+# Criar VM
+az vm create \
+  --resource-group mottu-rfid-rg \
+  --name mottu-vm \
+  --nics mottu-nic \
+  --image Ubuntu2204 \
+  --admin-username mottuadmin \
+  --admin-password MottU@P4ssw0rd2025 \
+  --size Standard_B2s \
+  --public-ip-sku Standard
+
+# Obter IP público da VM
+IP_PUBLICO=$(az network public-ip show \
+  --resource-group mottu-rfid-rg \
+  --name mottu-ip \
+  --query ipAddress \
+  --output tsv)
+
+echo "IP público da VM: $IP_PUBLICO"
+
+--------------------------------------
+
+ssh mottuadmin@172.172.222.152
+
+MottU@P4ssw0rd2025
+
+2.
+
+sudo apt-get update
+
+# Instalar pacotes necessários
+sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+# Adicionar a chave GPG oficial do Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# Configurar o repositório estável do Docker
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Atualizar os pacotes novamente
+sudo apt-get update
+
+# Instalar Docker Engine
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+# Adicionar o usuário atual ao grupo docker
+sudo usermod -aG docker $USER
+
+# Aplicar as alterações de grupo (ou fazer logout e login novamente)
+newgrp docker
+----------------------------------------------
+
+3. 
+
+git clone https://github.com/cashot01/moto-connect-api.git
+cd moto-connect-api
+
+# Criar o Dockerfile
+cat > Dockerfile << 'EOF'
+# Estágio de build - usando a imagem Maven oficial
+FROM maven:latest AS build
+WORKDIR /app
+
+# Copiar arquivos de dependências primeiro
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copiar o código-fonte
+COPY src ./src
+
+# Compilar e empacotar o aplicativo
+RUN mvn package -DskipTests
+RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+
+# Estágio final - usando a imagem OpenJDK oficial
+FROM openjdk:17 AS runtime
+VOLUME /tmp
+ARG DEPENDENCY=/app/target/dependency
+
+# Copiar dependências descompactadas
+COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
+
+# Expor a porta da aplicação
+EXPOSE 8080
+
+# Comando para executar a aplicação
+ENTRYPOINT ["java","-cp","app:app/lib/*","br.com.fiap.moto_connect_api.MotoConnectApiApplication"]
+EOF
+
+# Construir a imagem Docker
+docker build -t moto-connect-api:latest .
+
+# Executar o container
+docker run -d --name moto-connect-api \
+  -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb \
+  -e SPRING_DATASOURCE_USERNAME=sa \
+  -e SPRING_DATASOURCE_PASSWORD= \
+  -e SPRING_H2_CONSOLE_ENABLED=true \
+  -e SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS=true \
+  moto-connect-api:latest
+```
+
+
+```bash
+# Verificar status do container
+docker ps | grep moto-connect-api
+
+# Verificar logs do container
+docker logs moto-connect-api
+
+# Testar o endpoint de usuários
+curl -X GET http://localhost:8080/usuarios
+
+# Testar o endpoint de motos
+curl -X GET http://localhost:8080/motos
+
+# Testar o endpoint de RFIDs
+curl -X GET http://localhost:8080/motos/rfid
+
+# Obter o IP público da VM para acesso externo
+IP_PUBLICO=$(curl -s ifconfig.me)
+echo "IP público da VM: $IP_PUBLICO"
+------------------------------------
+
+4. Acesse os seguintes URLs em seu navegador:
+
+- API: http://172.172.222.152:8080
+- Swagger UI: http://172.172.222.152:8080/swagger-ui/index.html
+- Console H2: http://172.172.222.152:8080/h2-console
+
+Para o console H2, use as seguintes configurações:
+- JDBC URL: `jdbc:h2:mem:testdb`
+- User Name: `sa`
+- Password: (deixe em branco)
+
+## 7. Limpeza de Recursos (Opcional)
+
+```bash
+# Remover o container
+docker stop moto-connect-api
+docker rm moto-connect-api
+
+# Remover a imagem
+docker rmi moto-connect-api:latest
+
+# Excluir o grupo de recursos no Azure (remove todos os recursos)
+az group delete --name mottu-rfid-rg --yes
+
