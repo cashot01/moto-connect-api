@@ -1,6 +1,43 @@
 Moto Connect API 🏍️🔌
 Repositório: https://github.com/cashot01/moto-connect-api
 
+## Solução Rfid
+📍 Como usar RFID para resolver o desafio:
+1. Identificação:
+- Coloque uma etiqueta RFID em cada moto.
+- Cada etiqueta terá um ID único associado no sistema àquela moto específica (modelo, placa, etc.).
+2. Leitura e Mapeamento:
+- Instale leitores RFID fixos nas entradas, saídas e pontos estratégicos do pátio.
+- Quando a moto passa perto de um leitor, o sistema registra:
+    - O ID da moto
+    - O local do leitor (ex: Portão 1, Área A, Vaga 3)
+    - O horário da leitura.
+3. Sistema de Visualização:
+- Uma interface web ou app que mostra um mapa do pátio.
+- As posições são atualizadas em tempo real conforme as motos são lidas.
+4. Integração:
+- O sistema pode ainda integrar:
+- Sensores IoT da moto (para status como ligado/desligado).
+- API para gerenciamento dos dados.
+- Banco de dados para armazenar histórico de movimentações.
+ 
+🛠️ Componentes que você precisaria:
+ 
+Componente	|  Função  |	Exemplos
+Etiquetas RFID |	Identificação única da moto |	RFID UHF Tags resistentes para veículos
+Leitores RFID |	Captura de presença e localização |	Leitores fixos UHF (como Impinj Speedway, ou opções mais baratas tipo leitor USB portátil)
+Sistema Backend |	Processamento dos dados lidos |	API em .NET Core, Java Spring ou Node.js
+Banco de Dados |	Armazenar dados de motos e movimentações |	Oracle (requisito do challenge)
+Frontend	| Interface visual para mapa do pátio |	ReactJS, React Native ou aplicação web simples
+ 
+ 
+🎯 Benefícios de usar RFID:
+-Precisão alta (sem precisar de câmeras ou visão computacional para detectar todas as motos).
+-Baixo custo operacional depois da implantação.
+-Automação na atualização de posições sem intervenção humana.
+-Escalável para 100+ filiais, como a Mottu quer.
+ 
+
 📌 Visão Geral
 API RESTful desenvolvida com Spring Boot para gerenciamento de usuários, motos, RFIDs e histórico de manutenção. A aplicação inclui filtros, paginação, cache, tratamento global de erros e documentação automática com Swagger.
 
