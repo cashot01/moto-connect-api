@@ -32,9 +32,6 @@ public class Moto  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    //@NotBlank(message = "tagRfid obrigatória")
-    //private String tagRfid;
-
     @NotNull(message = "modelo da moto obrigatório")
     private TipoModelo modelo;
 
@@ -54,19 +51,9 @@ public class Moto  {
     @JoinColumn(name = "tb_rfid", referencedColumnName = "id")
     private Rfid rfid;
 
-    //@OneToMany(cascade = CascadeType.ALL)
-    /*@JoinColumn(name = "tb_historico_moto", referencedColumnName = "id")
-    private HistoricoMoto historicoMoto;
-
-     */
-
     @OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<HistoricoMoto> historicos = new ArrayList<>();
-
-   /*@OneToMany(mappedBy = "moto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HistoricoMoto> historicos = new ArrayList<>();*/
-
 
 
 }

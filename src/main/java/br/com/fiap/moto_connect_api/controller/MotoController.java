@@ -31,76 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
-/*@RestController
-@RequestMapping("/motos")
-@Slf4j
-public class MotoController {
-    public record MotoFilter(String placa, TipoModelo modelo, TipoModelo status) {}
 
-    @Autowired
-    private MotoRepository motoRepository;
-
-    @Autowired
-    private RfidRepository rfidRepository;
-
-    @Autowired
-    private HistoricoMotoRepository historicoRepository;
-
-    @GetMapping
-    public Page<Moto> index(MotoFilter filter,
-                            @PageableDefault(size = 10, sort = "dataCadastro", direction = Sort.Direction.DESC) Pageable pageable) {
-        var specification = MotoSpecification.withFilters(filter);
-        return repository.findAll(specification, pageable);
-    }
-
-    @GetMapping
-    @Cacheable("motos")
-    @Operation(description = "Listar todas as motos", tags = "motos", summary = "Lista das Motos")
-    public List<Moto> index() {
-        log.info("Buscando todas as MOTOS");
-        return motoRepository.findAll();
-    }
-
-    @PostMapping
-    @CacheEvict(value = "motos", allEntries = true)
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(responses = {
-            @ApiResponse(responseCode = "400", description = "Falha na validação")
-    })
-    public Moto create(@RequestBody @Valid Moto moto) {
-        log.info("Cadastrando moto {}", moto.getModelo());
-        return motoRepository.save(moto);
-    }
-
-    @GetMapping("{id}")
-    public Moto get(@PathVariable Long id) {
-        log.info("Buscando moto {}", id);
-        return getMoto(id);
-    }
-
-    @DeleteMapping("{id}")
-    @CacheEvict(value = "motos", allEntries = true)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void destroy(@PathVariable Long id) {
-        log.info("Apagando moto {}", id);
-        motoRepository.delete(getMoto(id));
-    }
-
-    @PutMapping("{id}")
-    @CacheEvict(value = "motos", allEntries = true)
-    public Moto update(@PathVariable Long id, @RequestBody @Valid Moto moto) {
-        log.info("Atualizando moto {} {}", id, moto);
-        getMoto(id); // valida existência
-        moto.setId(id);
-        return motoRepository.save(moto);
-    }
-
-    private Moto getMoto(Long id) {
-        return motoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Moto não encontrada"));
-    }
-
- */
 @RestController
 @RequestMapping("/motos")
 @Slf4j

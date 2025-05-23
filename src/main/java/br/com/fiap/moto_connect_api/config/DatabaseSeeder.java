@@ -57,12 +57,12 @@ public class DatabaseSeeder {
 
         rfidRepository.saveAll(rfid);
 
-        // Agora associe nas motos
+        // Associando nas motos
         motos.get(0).setRfid(rfid.get(0));
         motos.get(1).setRfid(rfid.get(1));
         motos.get(2).setRfid(rfid.get(2));
 
-        // E salve novamente as motos já com os Rfids associados
+        // salvando novamente as motos já com os Rfids associados
         motoRepository.saveAll(motos);
 
         var historicos = List.of(
